@@ -1,0 +1,54 @@
+{% set switch = interfaces[ansible_nodename] %}
+{% set loopback_ip = switch.loopback %}
+{% set bridges = switch.bridges %}
+{% set bridge = bridges.vlan_aware.name %}
+{% set members = bridges.vlan_aware.members %}
+{% set vids = bridges.vlan_aware.vids.split(' ') %}
+{% set svi = bridges.vlan_aware.svi %}
+{% set bonds = switch.bonds.items() %}
+
+auto eth0
+iface eth0 inet dhcp
+
+auto lo
+iface lo inet loopback
+{% if loopback_ip is defined %}
+ address {{loopback_ip}}
+{% endif %}
+
+auto swp1
+iface swp1
+
+auto swp2
+iface swp2
+
+auto swp3
+iface swp3
+
+auto {{bridge}}
+iface {{bridge}}
+ bridge-vlan-aware yes
+ bridge-ports {% for port in members %}{{port}} {% endfor %} 
+ bridge-vids {% for vid in vids %}{{vid}} {% endfor %} 
+ bridge-pvid 1
+ bridge-stp on
+
+{% for key, val in svi.items() %}
+auto {{key}}
+iface {{key}}
+  address {{val.ip_and_mask}}
+{% endfor %}
+
+{% for key, val in bonds %}
+auto {{key}}
+iface {{key}}
+ bond-slaves {% for port in val.members %}{{port}} {% endfor %} 
+ address {{val.address}}
+ bond-mode 802.3ad
+ bond-miimon 100
+ bond-lacp-rate 1
+ bond-min-links 1
+ bond-xmit-hash-policy layer3+4
+{% endfor %}
+  
+

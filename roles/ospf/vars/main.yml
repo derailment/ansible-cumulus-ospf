@@ -1,0 +1,49 @@
+interfaces:
+  test.cumulus:
+    loopback: "10.0.1.10/32"
+    bonds: 
+      bond0:
+        members: ["swp1", "swp2"]
+        address: "10.0.20.20/30"
+    bridges:
+      vlan_aware:
+        name: "bridge"
+        pvid: "1"
+        vids: "200"
+        members: ["swp3"]
+        svi:
+          bridge.200:
+            ip_and_mask: "10.1.1.220/32"
+
+  leaf1.cumulus:
+    loopback: "10.0.1.1/32"
+    bonds: 
+      bond0:
+        members: ["swp1", "swp2"]
+        address: "10.0.2.1/30"
+    bridges:
+      vlan_aware:
+        name: "bridge"
+        pvid: "1"
+        vids: "100"
+        members: ["swp3"]
+        svi:
+          bridge.100:
+            ip_and_mask: "10.1.1.11/32"
+  leaf2.cumulus:
+    loopback: "10.0.1.2/32"
+    bonds: 
+      bond0:
+        members: ["swp1", "swp2"]
+        address: "10.0.2.2/30"
+    bridges:
+      vlan_aware:
+        name: "bridge"
+        pvid: "1"
+        vids: "200"
+        members: ["swp3"]
+        svi:
+          bridge.200:
+            ip_and_mask: "10.1.1.22/32"
+
+

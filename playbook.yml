@@ -1,0 +1,6 @@
+---
+- hosts: leaf
+  remote_user: root
+  roles: 
+    - ospf
+

@@ -1,0 +1,27 @@
+{% set switch = interfaces[ansible_nodename] %}
+{% set loopback_ip = switch.loopback %}
+{% set bonds = switch.bonds.items() %}
+frr version 4.0+cl3u3
+frr defaults datacenter
+hostname {{ansible_hostname}}
+username cumulus nopassword
+!
+service integrated-vtysh-config
+!
+log syslog informational
+!
+{% for key, val in bonds %}
+interface {{key}}
+ ip ospf network point-to-point
+!
+{% endfor %}
+router ospf
+ ospf router-id {{loopback_ip.split('/')[0]}}
+ redistribute connected
+ network {{loopback_ip}} area 0
+{% for key, val in bonds %}
+ network {{val.address}} area 0
+{% endfor %}
+!
+line vty
+!

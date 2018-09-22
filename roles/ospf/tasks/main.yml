@@ -1,0 +1,10 @@
+- name: configure /etc/network/interfaces
+  template: src=interfaces.j2 dest=/etc/network/interfaces
+  notify: reload networking
+
+- name: configure frr daemons file
+  template: src=frr_daemon.j2 dest=/etc/frr/daemons
+
+- name: configure frr configuration
+  template: src=frr_conf.j2 dest=/etc/frr/frr.conf
+  notify: restart frr
